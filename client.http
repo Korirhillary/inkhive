@@ -1,0 +1,9 @@
+@backendUrl=http://127.0.0.1:8000
+
+### Get Home
+GET {{backendUrl}}/ HTTP/1.1
+Accept: application/json
+
+### Get Backend Healthz
+GET {{backendUrl}}/healthz HTTP/1.1
+Accept: application/json

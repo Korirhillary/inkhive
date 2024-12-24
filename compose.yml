@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - inkhive_pgdb:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=inkhive
+      - POSTGRES_USER=inkhive
+      - POSTGRES_DB=inkhive
+    networks:
+      - inkhive_net
+
+volumes:
+  inkhive_pgdb:
+  inkhive_redis:
+
+networks:
+  inkhive_net:
