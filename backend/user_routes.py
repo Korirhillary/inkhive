@@ -10,7 +10,6 @@ router = APIRouter()
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
-    # Check if user already exists
     if db.query(User).filter((User.email == user.email) | (User.username == user.username)).first():
         raise HTTPException(status_code=400, detail="User with this email or username already exists")
 
