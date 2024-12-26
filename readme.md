@@ -59,3 +59,8 @@ uvicorn main:app --reload
 
 - We use [VSCode rest client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) to test the api
 - The request definition is in the file [client.http](./client.http)
+
+## Frontend
+
+- The frontend is built with NextJS and MUI.
+- The frontend code is located in the [frontend](./frontend/) directory.
