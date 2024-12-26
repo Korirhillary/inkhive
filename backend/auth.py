@@ -1,5 +1,4 @@
-import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from database import get_db
 from fastapi import Depends, HTTPException
