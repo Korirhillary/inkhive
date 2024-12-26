@@ -16,6 +16,8 @@ This is a simple blogging app that has these features
 
 ## Backend
 
+This is set up in the [backend](./backend/) directory
+
 Create a virtualenv
 
 ```sh
@@ -39,8 +41,21 @@ pip install python-multipart
 
 ```
 
-Running the app
+## Running the app
+
+switch to the backend directory
+
+```sh
+cd backend
+```
+
+Then use uvicorn to start it
 
 ```sh
 uvicorn main:app --reload
 ```
+
+### Testing backend API
+
+- We use [VSCode rest client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) to test the api
+- The request definition is in the file [client.http](./client.http)

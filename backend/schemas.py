@@ -18,3 +18,16 @@ class UserResponse(BaseModel):
 
 class CategoryCreate(BaseModel):
     name: str
+
+    class Config:
+        orm_mode = True
+
+
+class PostCreate(BaseModel):
+    title: str
+    title: str
+    content: str
+    category_id: int
+
+    class Config:
+        orm_mode = True

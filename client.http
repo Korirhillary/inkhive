@@ -31,19 +31,19 @@ username=admin&password=Admnn!23
 @authToken={{userLogin.response.body.access_token}}
 
 ### Create Post
-POST {{backendUrl}}/posts HTTP/1.1
+POST {{backendUrl}}/posts/ HTTP/1.1
 Authorization: Bearer {{authToken}}
 Accept: application/json
 Content-Type: application/json
 
 {
-  "title": "My First Post",
-  "content": "This is the content of my first post.",
-  "category_id": 1
+  "title": "My Second Post",
+  "content": "This is the content of my second post.",
+  "category_id": 2
 }
 
 ### List Posts
-GET {{backendUrl}}/posts HTTP/1.1
+GET {{backendUrl}}/posts/ HTTP/1.1
 Accept: application/json
 
 ### Get Post
@@ -70,7 +70,7 @@ GET {{backendUrl}}/categories HTTP/1.1
 Accept: application/json
 
 ### Get Category details
-GET {{backendUrl}}/categories/1 HTTP/1.1
+GET {{backendUrl}}/categories/2 HTTP/1.1
 Accept: application/json
 
 ### Create Category
@@ -80,7 +80,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "name": "Technology"
+  "name": "Politics"
 }
 
 ### Update Category

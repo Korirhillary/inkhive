@@ -2,14 +2,24 @@ from auth import get_current_user
 from database import SessionLocal, engine, get_db
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
 from models import Base, Category, Post, User
+from schemas import PostCreate
 from sqlalchemy.orm import Session
 
 router = APIRouter()
 
 
 @router.post("/")
-def create_post(title: str, content: str, category_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    post = Post(title=title, content=content, category_id=category_id, author_id=current_user.id)
+def create_post(
+    post_data: PostCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Create post"""
+    post = Post(
+        title=post_data.title,
+        content=post_data.content,
+        category_id=post_data.category_id,
+        author_id=current_user.id)
     db.add(post)
     db.commit()
     db.refresh(post)
