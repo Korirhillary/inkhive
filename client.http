@@ -80,7 +80,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "name": "Politics"
+  "name": "Test"
 }
 
 ### Update Category
