@@ -18,6 +18,12 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import {
+  createCategory,
+  deleteCategory,
+  getCategories,
+  updateCategory,
+} from "../lib/api";
 
 interface Category {
   id: number;
@@ -36,9 +42,8 @@ export default function ManageCategories() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch("http://localhost:8000/categories");
-      const data = await response.json();
-      setCategories(data);
+      const result = await getCategories();
+      setCategories(result);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -57,25 +62,9 @@ export default function ManageCategories() {
   const handleSubmit = async () => {
     try {
       if (editingCategory) {
-        await fetch(`http://localhost:8000/categories/${editingCategory.id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer {{authToken}}",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({ name: categoryName }),
-        });
+        await updateCategory(editingCategory.id, { name: categoryName });
       } else {
-        await fetch("http://localhost:8000/categories", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer {{authToken}}",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({ name: categoryName }),
-        });
+        await createCategory({ name: categoryName });
       }
       fetchCategories();
       handleClose();
@@ -92,9 +81,7 @@ export default function ManageCategories() {
 
   const handleDelete = async (id: number) => {
     try {
-      await fetch(`http://localhost:8000/categories/${id}`, {
-        method: "DELETE",
-      });
+      await deleteCategory(id);
       fetchCategories();
     } catch (error) {
       console.error("Error deleting category:", error);
