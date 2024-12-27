@@ -2,10 +2,11 @@
 
 import React from "react";
 import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
+import Toolbar from "@mui/material/Toolbox";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Link from "next/link";
+import Box from "@mui/material/Box";  // Import Box component
 import { signOut, useSession } from "next-auth/react";
 
 export default function AppHeader() {
@@ -20,7 +21,7 @@ export default function AppHeader() {
             passHref
             style={{ color: "inherit", textDecoration: "none" }}
           >
-            DuBlog
+            Inkdrive
           </Link>
         </Typography>
         <Button color="inherit" component={Link} href="/categories">
@@ -44,14 +45,15 @@ export default function AppHeader() {
             </Button>
           </>
         ) : (
-          <>
+          <Box sx={{ display: 'flex', gap: 1 }}>
             <Button color="inherit" component={Link} href="/login">
               Login
             </Button>
+            <Box sx={{ height: '1em' }} />  // Line break
             <Button color="inherit" component={Link} href="/register">
               Register
             </Button>
-          </>
+          </Box>
         )}
       </Toolbar>
     </AppBar>
