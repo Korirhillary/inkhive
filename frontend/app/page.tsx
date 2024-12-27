@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Box,
   Button,
@@ -12,7 +14,8 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getCategories } from "./lib/api";
 
 interface Post {
   id: number;
@@ -54,14 +57,22 @@ const posts: Post[] = [
   },
 ];
 
-const categories: Category[] = [
-  { id: 1, name: "Technology", postCount: 5 },
-  { id: 2, name: "Travel", postCount: 3 },
-  { id: 3, name: "Food", postCount: 2 },
-  { id: 4, name: "Lifestyle", postCount: 4 },
-];
-
 export default function Home() {
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const result = await getCategories();
+      setCategories(result);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
   return (
     <Grid container spacing={4}>
       <Grid item xs={12} md={8}>
