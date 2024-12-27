@@ -14,6 +14,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import Link from "next/link";
 import React from "react";
 import theme from "./theme";
+import AppHeader from "./AppHeader";
 
 export default function RootLayout({
   children,
