@@ -1,9 +1,10 @@
 import { object, string } from "zod";
 
 export const signInSchema = object({
-  email: string({ required_error: "Email is required" })
-    .min(1, "Email is required")
-    .email("Invalid email"),
+  username: string({ required_error: "Username is required" }).min(
+    1,
+    "Username is required"
+  ),
   password: string({ required_error: "Password is required" }).min(
     1,
     "Password is required"
@@ -11,6 +12,10 @@ export const signInSchema = object({
 });
 
 export const registerSchema = object({
+  username: string({ required_error: "Username is required" }).min(
+    1,
+    "Username is required"
+  ),
   email: string({ required_error: "Email is required" })
     .min(1, "Email is required")
     .email("Invalid email"),

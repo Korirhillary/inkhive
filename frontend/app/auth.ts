@@ -30,7 +30,12 @@ export const authOptions: NextAuthConfig = {
             credentials
           );
 
-          const response = await fetch(`${process.env.API_URL}/users/login`, {
+          console.log("username", username);
+          console.log("password", password);
+
+          const apiUrl = `${process.env.API_URL}/users/login`;
+          console.log("apiUrl", apiUrl);
+          const response = await fetch(apiUrl, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -41,6 +46,8 @@ export const authOptions: NextAuthConfig = {
               password,
             }),
           });
+
+          console.log("response", response.statusText);
 
           const { user, error, token } = await response.json();
 
