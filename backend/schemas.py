@@ -25,7 +25,6 @@ class CategoryCreate(BaseModel):
 
 class PostCreate(BaseModel):
     title: str
-    title: str
     content: str
     category_id: int
 

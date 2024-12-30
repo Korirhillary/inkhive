@@ -15,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { getCategories } from "./lib/api";
+import { getCategories, getPosts } from "./lib/api";
 
 interface Post {
   id: number;
@@ -30,48 +30,40 @@ interface Category {
   postCount: number;
 }
 
-const posts: Post[] = [
-  {
-    id: 1,
-    title: "First Post",
-    excerpt: "This is the first post",
-    author: "John Doe",
-  },
-  {
-    id: 2,
-    title: "Second Post",
-    excerpt: "This is the second post",
-    author: "Jane Smith",
-  },
-  {
-    id: 3,
-    title: "Third Post",
-    excerpt: "This is the third post",
-    author: "Bob Johnson",
-  },
-  {
-    id: 4,
-    title: "Fourth Post",
-    excerpt: "This is the fourth post",
-    author: "Alice Brown",
-  },
-];
-
 export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchCategories();
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [categoriesData, postsData] = await Promise.all([
+          getCategories(),
+          getPosts()
+        ]);
+        setCategories(categoriesData);
+        setPosts(postsData);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError("Failed to load data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const fetchCategories = async () => {
-    try {
-      const result = await getCategories();
-      setCategories(result);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
+
+  if (error) {
+    return <Typography color="error">{error}</Typography>;
+  }
 
   return (
     <Grid container spacing={4}>
@@ -125,3 +117,4 @@ export default function Home() {
     </Grid>
   );
 }
+
