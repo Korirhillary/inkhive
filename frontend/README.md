@@ -5,11 +5,25 @@ This is a nextjs based site
 - next auth for authentication
 - Create file `.env.local` in the frontend directory with this content
 
+To generate the random secret, use this command:
+
+```sh
+npx auth secret
+```
+
+or
+
+```bash
+ openssl rand -hex 32
+ ```
+
+file content
+
 ```sh
 ENV=dev
 API_URL=http://localhost:8000
 AUTH_URL=http://localhost:3000/api/auth
-AUTH_SECRET=jeWa0U8EeXcptXCEZDZlG0em5MjEPOhycZlPpkk5BY72sPgD8M88lJ6MnrRWEw5w # openssl rand -hex 48
+AUTH_SECRET=<random secret>
 ```
 
 Installing dependencies
