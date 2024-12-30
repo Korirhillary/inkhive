@@ -1,5 +1,7 @@
 "use client";
 
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
   Alert,
   Box,
@@ -17,11 +19,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { z } from "zod";
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  username: z.string().min(1, "Username is required"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
@@ -29,7 +29,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 const useLoginForm = () => {
   const [formData, setFormData] = useState<LoginFormData>({
-    email: "",
+    username: "",
     password: "",
   });
   const [errors, setErrors] = useState<Partial<LoginFormData>>({});
@@ -59,13 +59,12 @@ const useLoginForm = () => {
 
       const result = await signIn("credentials", {
         redirect: false,
-        email: formData.email,
-        password: formData.password,
+        ...formData,
       });
 
       if (result?.error) {
         const errorMessages: Record<string, string> = {
-          CredentialsSignin: "Invalid email or password",
+          CredentialsSignin: "Invalid username or password",
           Configuration: "There's an issue with the server configuration",
           Default: "An unexpected error occurred",
         };
@@ -100,7 +99,7 @@ const useLoginForm = () => {
     handleChange,
     handleSubmit,
     setShowPassword,
-    setRememberMe
+    setRememberMe,
   };
 };
 
@@ -115,7 +114,7 @@ const LoginForm: React.FC = () => {
     handleChange,
     handleSubmit,
     setShowPassword,
-    setRememberMe
+    setRememberMe,
   } = useLoginForm();
 
   return (
@@ -131,31 +130,31 @@ const LoginForm: React.FC = () => {
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Login
         </Typography>
-        
+
         {generalError && (
           <Alert severity="error" sx={{ mt: 2, width: "100%" }}>
             {generalError}
           </Alert>
         )}
-        
+
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             fullWidth
-            label="Email"
+            label="Username"
             variant="outlined"
             margin="normal"
-            type="email"
-            name="email"
-            value={formData.email}
+            type="text"
+            name="username"
+            value={formData.username}
             onChange={handleChange}
-            error={!!errors.email}
-            helperText={errors.email}
+            error={!!errors.username}
+            helperText={errors.username}
           />
-          
+
           <TextField
             fullWidth
             label="Password"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             name="password"
             variant="outlined"
             margin="normal"
@@ -176,7 +175,7 @@ const LoginForm: React.FC = () => {
               ),
             }}
           />
-          
+
           <FormControlLabel
             control={
               <Checkbox
@@ -187,7 +186,7 @@ const LoginForm: React.FC = () => {
             }
             label="Remember Me"
           />
-          
+
           <Button
             type="submit"
             fullWidth
@@ -198,7 +197,7 @@ const LoginForm: React.FC = () => {
           >
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
-          
+
           <Box sx={{ mt: 2 }}>
             Don&apos;t have an account? <Link href="/register">Register</Link>
           </Box>

@@ -1,21 +1,21 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { apiUrl } from "@/utils/env";
 import {
   Alert,
-  Typography,
+  Box,
+  Button,
   Paper,
   TextField,
-  Button,
-  Box,
+  Typography,
 } from "@mui/material";
-import { z } from "zod";
-import { apiUrl } from "@/utils/env";
 import { useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
+import { z } from "zod";
 
 const registerSchema = z
   .object({
-    name: z.string().min(1, "Name is required"),
+    username: z.string().min(1, "Username is required"),
     email: z.string().email("Invalid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     password_confirm: z.string().min(8, "Password confirmation is required"),
@@ -29,7 +29,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 const useRegisterForm = () => {
   const [formData, setFormData] = useState<RegisterFormData>({
-    name: "",
+    username: "",
     email: "",
     password: "",
     password_confirm: "",
@@ -55,7 +55,7 @@ const useRegisterForm = () => {
     try {
       registerSchema.parse(formData);
 
-      await fetch(`${apiUrl}/auth/register`, {
+      const response = await fetch(`${apiUrl}/users/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,6 +65,11 @@ const useRegisterForm = () => {
           ...formData,
         }),
       });
+
+      if (response.status !== 201) {
+        const data = await response.json();
+        throw new Error(data.message);
+      }
 
       router.push("/login");
     } catch (error: any) {
@@ -120,15 +125,15 @@ export default function Register() {
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             fullWidth
-            label="Name"
+            label="Username"
             variant="outlined"
             margin="normal"
             type="text"
-            name="name"
-            value={formData.name}
+            name="username"
+            value={formData.username}
             onChange={handleChange}
-            error={!!errors.name}
-            helperText={errors.name}
+            error={!!errors.username}
+            helperText={errors.username}
           />
           <TextField
             fullWidth

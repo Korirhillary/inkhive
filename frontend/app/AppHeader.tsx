@@ -1,13 +1,12 @@
 "use client";
 
-import React from "react";
 import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbox";
-import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Link from "next/link";
-import Box from "@mui/material/Box";  // Import Box component
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 export default function AppHeader() {
   const { data: session } = useSession();
@@ -45,11 +44,11 @@ export default function AppHeader() {
             </Button>
           </>
         ) : (
-          <Box sx={{ display: 'flex', gap: 1 }}>
+          <Box sx={{ display: "flex", gap: 1 }}>
             <Button color="inherit" component={Link} href="/login">
               Login
             </Button>
-            <Box sx={{ height: '1em' }} />  // Line break
+            <Box sx={{ height: "1em" }} />
             <Button color="inherit" component={Link} href="/register">
               Register
             </Button>
