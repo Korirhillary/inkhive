@@ -31,8 +31,8 @@ export default function AppHeader() {
             <Button color="inherit" component={Link} href="/categories/new">
               Add Category
             </Button>
-            <Button color="inherit" component={Link} href="/articles/new">
-              Write Article
+            <Button color="inherit" component={Link} href="/posts/new">
+              Add Post
             </Button>
             <Button
               color="inherit"

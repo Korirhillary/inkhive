@@ -16,49 +16,8 @@ This is a simple blogging app that has these features
 
 ## Backend
 
-This is set up in the [backend](./backend/) directory
-
-Create a virtualenv
-
-```sh
-python -m venv ~/tmp/venvs/inkhive
-```
-
-Activate the virtualenv
-
-```sh
-source ~/tmp/venvs/inkhive/bin/activate
-```
-
-Installing fastapi and setting up dependencies
-
-```sh
-pip install fastapi uvicorn sqlalchemy psycopg2-binary alembic pydantic bcrypt python-jose
-
-pip install 'pydantic[email]'
-pip install passlib
-pip install python-multipart
-
-```
-
-## Running the app
-
-switch to the backend directory
-
-```sh
-cd backend
-```
-
-Then use uvicorn to start it
-
-```sh
-uvicorn main:app --reload
-```
-
-### Testing backend API
-
-- We use [VSCode rest client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) to test the api
-- The request definition is in the file [client.http](./client.http)
+- The backend is built with fastapi with postgres storing the data
+- The frontend code is in the [backend](./backend/) directory.
 
 ## Frontend
 

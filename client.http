@@ -14,9 +14,9 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "username": "Test",
-  "email": "test@ciitizix.com",
-  "password": "Admnn!23"
+  "username": "userOne",
+  "email": "userOne@gmail.com",
+  "password": "Ink@Hive"
 }
 
 ### Login User
@@ -25,7 +25,7 @@ POST {{backendUrl}}/users/login HTTP/1.1
 Accept: application/json
 Content-Type: application/x-www-form-urlencoded
 
-username=admin&password=Admnn!23
+username=userOne&password=Ink@Hive
 
 ### Get User login token
 @authToken={{userLogin.response.body.access_token}}
