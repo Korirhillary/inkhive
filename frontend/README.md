@@ -15,7 +15,7 @@ or
 
 ```bash
  openssl rand -hex 32
- ```
+```
 
 file content
 
@@ -27,6 +27,10 @@ AUTH_SECRET=<random secret>
 ```
 
 Installing dependencies
+
+First ensure that you have the latest npm version. Checkout the version used in the [nvmrc](./.nvmrc) file.
+
+Checkout the [Node version manager](https://github.com/nvm-sh/nvm) for an easy way to manage node and 
 
 In the `frontend` directory, run
 
