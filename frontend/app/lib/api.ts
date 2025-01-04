@@ -51,3 +51,11 @@ export const deleteCategory = async (id: number) => {
     method: "DELETE",
   });
 };
+
+
+export const getPosts = async () => {
+  return fetchWithAuth("/posts");
+};
+
+
+
