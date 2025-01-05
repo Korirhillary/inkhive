@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from models import Category, User
 from schemas import CategoryCreate
 from sqlalchemy.orm import Session
+from sqlalchemy import func
+from models import Post
 
 router = APIRouter()
 
@@ -26,8 +28,15 @@ def create_category(
 
 @router.get("/")
 def list_categories(db: Session = Depends(get_db)):
-    """Get all categories"""
-    return db.query(Category).all()
+    """Get all categories with their post counts"""
+    categories_with_counts = db.query(Category, func.count(Post.id).label('post_count')) \
+                               .outerjoin(Post, Category.id == Post.category_id) \
+                               .group_by(Category.id) \
+                               .all()
+    
+    # Convert the result to a list of dictionaries including post counts
+    return [{"id": category.id, "name": category.name, "post_count": count} 
+            for category, count in categories_with_counts]
 
 
 @router.get("/{category_id}")

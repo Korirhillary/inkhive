@@ -28,6 +28,7 @@ import {
 interface Category {
   id: number;
   name: string;
+  post_count: number;
 }
 
 export default function ManageCategories() {
@@ -105,7 +106,9 @@ export default function ManageCategories() {
       <List>
         {categories.map((category) => (
           <ListItem key={category.id} divider>
-            <ListItemText primary={category.name} />
+            <ListItemText
+          primary={`${category.name} (${category.post_count} posts)`} // Display post count
+            />
             <Button
               startIcon={<EditIcon />}
               onClick={() => handleEdit(category)}
