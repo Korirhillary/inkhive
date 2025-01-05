@@ -25,11 +25,17 @@ import {
   updateCategory,
 } from "../lib/api";
 
+interface User {
+  id: number;
+  username: string;
+  email: string;
+}
+
 interface Category {
   id: number;
   name: string;
+  creator: User;
 }
-
 export default function ManageCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [open, setOpen] = useState(false);
@@ -43,7 +49,7 @@ export default function ManageCategories() {
   const fetchCategories = async () => {
     try {
       const result = await getCategories();
-      setCategories(result);
+      setCategories(result.categories);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }

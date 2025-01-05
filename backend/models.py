@@ -1,5 +1,7 @@
 from datetime import datetime
+from typing import List, Optional
 
+from pydantic import BaseModel
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -37,3 +39,34 @@ class Category(Base):
     creator_id = Column(Integer, ForeignKey("users.id"))
     creator = relationship("User", back_populates="categories")
     posts = relationship("Post", back_populates="category")
+
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+
+    class Config:
+        orm_mode = True
+
+
+class CategoryResponse(BaseModel):
+    id: int
+    name: str
+    creator: UserResponse
+
+    class Config:
+        orm_mode = True
+
+
+class PaginationResponse(BaseModel):
+    count: int
+    next_page: Optional[int]
+    num_pages: int
+    page: int
+    per: int
+    prev_page: Optional[int]
+
+class CategoryListResponse(BaseModel):
+    pagination: PaginationResponse
+    categories: List[CategoryResponse]
