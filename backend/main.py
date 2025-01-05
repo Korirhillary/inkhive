@@ -1,10 +1,10 @@
 import category_routes
 import post_routes
 import user_routes
-from database import SessionLocal, engine, get_db
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
+from database import engine
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from models import Base, Category, Post, User
+from models import Base
 
 Base.metadata.create_all(bind=engine)
 
@@ -29,9 +29,11 @@ app.include_router(category_routes.router, prefix="/categories", tags=["Categori
 
 @app.get("/")
 def home():
+    """Returns homepage message"""
     return {"status": "Home"}
 
 
 @app.get("/healthz")
 def healthz():
+    """"Returns health status"""
     return {"status": "Healthy"}

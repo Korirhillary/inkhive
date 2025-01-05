@@ -1,12 +1,8 @@
 import { signInSchema } from "@/lib/zod";
-import NextAuth, { CredentialsSignin, NextAuthConfig } from "next-auth";
+import NextAuth, { NextAuthConfig } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { ZodError } from "zod";
-
-class InvalidLoginError extends CredentialsSignin {
-  code = "login response not Ok";
-}
 
 const isDev = process.env.ENV === "local" || process.env.ENV === "dev";
 const isLive = process.env.ENV === "stage" || process.env.ENV === "prod";
@@ -30,36 +26,31 @@ export const authOptions: NextAuthConfig = {
             credentials
           );
 
-          console.log("username", username);
-          console.log("password", password);
-
-          const apiUrl = `${process.env.API_URL}/users/login`;
-          console.log("apiUrl", apiUrl);
-          const response = await fetch(apiUrl, {
+          const response = await fetch(`${process.env.API_URL}/users/login`, {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": "application/x-www-form-urlencoded",
               Accept: "application/json",
             },
-            body: JSON.stringify({
-              username,
-              password,
-            }),
+            body: `username=${username}&password=${password}`,
           });
 
-          console.log("response", response.statusText);
+          const data = await response.json();
 
-          const { user, error, token } = await response.json();
-
-          if (!response.ok || !user) {
-            throw new InvalidLoginError(error);
+          if (!response.ok || !data.user) {
+            console.log("failed to login", data);
+            return null;
           }
 
           return {
-            ...user,
-            accessToken: token,
+            id: data.user.id,
+            ...data.user,
+            accessToken: data.access_token,
           };
         } catch (error) {
+          if (isDev) {
+            console.error("Auth error:", error);
+          }
           if (error instanceof ZodError) {
             return null;
           }
@@ -91,7 +82,7 @@ export const authOptions: NextAuthConfig = {
   secret: process.env.AUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: 24 * 60 * 60, // 1 day
+    maxAge: 24 * 60 * 60,
   },
   cookies: {
     sessionToken: {

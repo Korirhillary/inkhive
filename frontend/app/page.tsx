@@ -14,14 +14,18 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { getCategories, getPosts } from "./lib/api";
 
 interface Post {
   id: number;
   title: string;
-  excerpt: string;
-  author: string;
+  content: string;
+  author_id: number;
+  created_at: string;
+  updated_at: string;
+  category_id: number;
 }
 
 interface Category {
@@ -42,7 +46,7 @@ export default function Home() {
         setLoading(true);
         const [categoriesData, postsData] = await Promise.all([
           getCategories(),
-          getPosts()
+          getPosts(),
         ]);
         setCategories(categoriesData);
         setPosts(postsData);
@@ -80,14 +84,24 @@ export default function Home() {
                     {post.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {post.excerpt}
+                    {post.content}
                   </Typography>
                   <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                    By {post.author}
+                    By {post.author_id}, Created On {post.created_at}
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <Button size="small">Read More</Button>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      component={Link}
+                      href={`/posts/${post.id}`}
+                      variant="outlined"
+                      color="primary"
+                    >
+                      Read More
+                    </Button>
+                  </CardActions>
                 </CardActions>
               </Card>
               {index < posts.length - 1 && <Divider sx={{ my: 2 }} />}
@@ -117,4 +131,3 @@ export default function Home() {
     </Grid>
   );
 }
-
