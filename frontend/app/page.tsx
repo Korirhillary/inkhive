@@ -28,10 +28,17 @@ interface Post {
   category_id: number;
 }
 
+interface User {
+  id: number;
+  username: string;
+  email: string;
+}
+
 interface Category {
   id: number;
   name: string;
   postCount: number;
+  creator: User;
 }
 
 export default function Home() {
@@ -48,7 +55,7 @@ export default function Home() {
           getCategories(),
           getPosts(),
         ]);
-        setCategories(categoriesData);
+        setCategories(categoriesData.categories);
         setPosts(postsData);
       } catch (err) {
         console.error("Error fetching data:", err);
