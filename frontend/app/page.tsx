@@ -1,4 +1,5 @@
 "use client";
+import { formatDate } from './utils/dateUtils';
 
 import {
   Box,
@@ -87,7 +88,7 @@ export default function Home() {
                     {post.content}
                   </Typography>
                   <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                    By {post.author_id}, Created On {post.created_at}
+                    By {post.author_id}, Created On {formatDate(post.created_at)}
                   </Typography>
                 </CardContent>
                 <CardActions>
