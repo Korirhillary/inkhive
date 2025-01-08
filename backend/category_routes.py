@@ -1,11 +1,12 @@
+from math import ceil
+from typing import List, Optional
+
 from auth import get_current_user
 from database import SessionLocal, engine, get_db
-from fastapi import APIRouter, Depends, HTTPException
-from models import Category, User
+from fastapi import APIRouter, Depends, HTTPException, Query
+from models import Category, CategoryListResponse, CategoryResponse, User
 from schemas import CategoryCreate
-from sqlalchemy.orm import Session
-from sqlalchemy import func
-from models import Post
+from sqlalchemy.orm import Session, joinedload
 
 router = APIRouter()
 
@@ -26,23 +27,57 @@ def create_category(
     return category
 
 
-@router.get("/")
-def list_categories(db: Session = Depends(get_db)):
-    """Get all categories with their post counts"""
-    categories_with_counts = db.query(Category, func.count(Post.id).label('post_count')) \
-                               .outerjoin(Post, Category.id == Post.category_id) \
-                               .group_by(Category.id) \
-                               .all()
-    
-    # Convert the result to a list of dictionaries including post counts
-    return [{"id": category.id, "name": category.name, "post_count": count} 
-            for category, count in categories_with_counts]
+@router.get("/", response_model=CategoryListResponse)
+def list_categories(
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1, description="Page number"),
+    per: int = Query(10, ge=1, le=100, description="Items per page")
+):
+    """
+    Get paginated list of categories with pagination details.
+    """
+    total_count = db.query(Category).count()
+    num_pages = ceil(total_count / per)
+    offset = (page - 1) * per
+
+    categories = (
+        db.query(Category)
+        .options(joinedload(Category.creator))
+        .offset(offset)
+        .limit(per)
+        .all()
+    )
+
+    next_page = page + 1 if page < num_pages else None
+    prev_page = page - 1 if page > 1 else None
+
+    response = {
+        "pagination": {
+            "count": total_count,
+            "next_page": next_page,
+            "num_pages": num_pages,
+            "page": page,
+            "per": per,
+            "prev_page": prev_page
+        },
+        "categories": categories
+    }
+    return response
 
 
-@router.get("/{category_id}")
+
+@router.get("/{category_id}", response_model=CategoryResponse)
 def read_category(category_id: int, db: Session = Depends(get_db)):
     """Get category by ID"""
-    category = db.query(Category).filter(Category.id == category_id).first()
+    category = (
+        db.query(Category)
+        .join(User, Category.creator_id == User.id)
+        .filter(Category.id == category_id)
+        .options(
+            joinedload(Category.creator)
+        )
+        .first()
+    )
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
     return category

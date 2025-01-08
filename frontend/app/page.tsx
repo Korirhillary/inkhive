@@ -2,44 +2,54 @@
 import { formatDate } from './utils/dateUtils';
 
 import {
-  Box,
+  Add as AddIcon,
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+} from "@mui/icons-material";
+import {
   Button,
-  Card,
-  CardActions,
-  CardContent,
-  Chip,
-  Divider,
-  Grid,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   List,
   ListItem,
   ListItemText,
+  TextField,
   Typography,
 } from "@mui/material";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { getCategories, getPosts } from "./lib/api";
+import { useEffect, useState } from "react";
+import {
+  createCategory,
+  deleteCategory,
+  getCategories,
+  updateCategory,
+} from "../lib/api";
 
-interface Post {
+interface User {
   id: number;
-  title: string;
-  content: string;
-  author_id: number;
-  created_at: string;
-  updated_at: string;
-  category_id: number;
+  username: string;
+  email: string;
+}
+
+interface User {
+  id: number;
+  username: string;
+  email: string;
 }
 
 interface Category {
   id: number;
   name: string;
   post_count: number;
+  creator: User;
 }
 
-export default function Home() {
+export default function ManageCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const [categoryName, setCategoryName] = useState("");
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,7 +59,7 @@ export default function Home() {
           getCategories(),
           getPosts(),
         ]);
-        setCategories(categoriesData);
+        setCategories(categoriesData.categories);
         setPosts(postsData);
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -120,7 +130,7 @@ export default function Home() {
               <ListItem key={category.id} disablePadding sx={{ mb: 1 }}>
                 <ListItemText primary={category.name} />
                 <Chip
-                  label={`${category.post_count} posts`}  // Display post count
+                  label={`${category.postCount} posts`}
                   size="small"
                   variant="outlined"
                 />

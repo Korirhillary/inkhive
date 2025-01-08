@@ -25,12 +25,18 @@ import {
   updateCategory,
 } from "../lib/api";
 
+interface User {
+  id: number;
+  username: string;
+  email: string;
+}
+
 interface Category {
   id: number;
   name: string;
   post_count: number;
+  creator: User;
 }
-
 export default function ManageCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [open, setOpen] = useState(false);
@@ -44,7 +50,7 @@ export default function ManageCategories() {
   const fetchCategories = async () => {
     try {
       const result = await getCategories();
-      setCategories(result);
+      setCategories(result.categories);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -107,7 +113,7 @@ export default function ManageCategories() {
         {categories.map((category) => (
           <ListItem key={category.id} divider>
             <ListItemText
-          primary={`${category.name} (${category.post_count} posts)`} // Display post count
+              primary={`${category.name} (${category.post_count} posts)`}
             />
             <Button
               startIcon={<EditIcon />}
