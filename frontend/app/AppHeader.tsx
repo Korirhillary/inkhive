@@ -20,19 +20,22 @@ export default function AppHeader() {
             passHref
             style={{ color: "inherit", textDecoration: "none" }}
           >
-            Inkdrive
+            Inkhive
           </Link>
         </Typography>
         <Button color="inherit" component={Link} href="/categories">
           Categories
+        </Button>
+        <Button color="inherit" component={Link} href="/createpost">
+          createpost
         </Button>
         {session ? (
           <>
             <Button color="inherit" component={Link} href="/categories/new">
               Add Category
             </Button>
-            <Button color="inherit" component={Link} href="/posts/new">
-              Add Post
+            <Button color="inherit" component={Link} href="/articles/new">
+              Write Article
             </Button>
             <Button
               color="inherit"
