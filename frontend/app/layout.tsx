@@ -8,6 +8,7 @@ import { SessionProvider } from "next-auth/react";
 import React from "react";
 import AppHeader from "./AppHeader";
 import theme from "./theme";
+import Head from "next/head";
 
 export default function RootLayout({
   children,
@@ -16,6 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+       <Head>
+       <link rel="icon" href="/favicon.jpg" type="image/jpeg"/>
+      </Head>
       <body>
         <SessionProvider>
           <AppRouterCacheProvider>
