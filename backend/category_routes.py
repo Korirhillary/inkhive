@@ -1,10 +1,10 @@
 from math import ceil
 from typing import List, Optional
 
-from auth import get_current_user  # Ensure this module exists in your project
+from auth import get_current_user
 from database import SessionLocal, engine, get_db
 from fastapi import APIRouter, Depends, HTTPException, Query
-from models import Category, CategoryListResponse, CategoryResponse, User, Post  # Make sure Post is imported
+from models import Category, CategoryListResponse, CategoryResponse, User, Post
 from schemas import CategoryCreate
 from sqlalchemy.orm import Session, joinedload
 
