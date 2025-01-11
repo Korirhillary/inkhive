@@ -8,7 +8,6 @@ import { SessionProvider } from "next-auth/react";
 import React from "react";
 import AppHeader from "./AppHeader";
 import theme from "./theme";
-import Head from "next/head";
 
 export default function RootLayout({
   children,

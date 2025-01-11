@@ -46,10 +46,8 @@ def list_categories(
         .all()
     )
 
-    # Adding post count for each category
     for category in categories:
         post_count = db.query(Post).filter(Post.category_id == category.id).count()
-        # Here you're adding post_count dynamically
         category.post_count = post_count  
 
     next_page = page + 1 if page < num_pages else None
