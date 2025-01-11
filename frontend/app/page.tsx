@@ -2,34 +2,31 @@
 import { formatDate } from './utils/dateUtils';
 
 import {
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-} from "@mui/icons-material";
-import {
+  Box,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
+  Card,
+  CardActions,
+  CardContent,
+  Chip,
+  Divider,
+  Grid,
   List,
   ListItem,
   ListItemText,
-  TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import {
-  createCategory,
-  deleteCategory,
-  getCategories,
-  updateCategory,
-} from "../lib/api";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { getCategories, getPosts } from "./lib/api";
 
-interface User {
+interface Post {
   id: number;
-  username: string;
-  email: string;
+  title: string;
+  content: string;
+  author_id: number;
+  created_at: string;
+  updated_at: string;
+  category_id: number;
 }
 
 interface User {
@@ -45,11 +42,11 @@ interface Category {
   creator: User;
 }
 
-export default function ManageCategories() {
+export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [open, setOpen] = useState(false);
-  const [categoryName, setCategoryName] = useState("");
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -130,7 +127,7 @@ export default function ManageCategories() {
               <ListItem key={category.id} disablePadding sx={{ mb: 1 }}>
                 <ListItemText primary={category.name} />
                 <Chip
-                  label={`${category.postCount} posts`}
+                  label={`${category.post_count} posts`}
                   size="small"
                   variant="outlined"
                 />

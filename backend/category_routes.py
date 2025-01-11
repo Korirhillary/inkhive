@@ -1,15 +1,14 @@
 from math import ceil
 from typing import List, Optional
 
-from auth import get_current_user
+from auth import get_current_user  # Ensure this module exists in your project
 from database import SessionLocal, engine, get_db
 from fastapi import APIRouter, Depends, HTTPException, Query
-from models import Category, CategoryListResponse, CategoryResponse, User
+from models import Category, CategoryListResponse, CategoryResponse, User, Post  # Make sure Post is imported
 from schemas import CategoryCreate
 from sqlalchemy.orm import Session, joinedload
 
 router = APIRouter()
-
 
 @router.post("/")
 def create_category(
@@ -25,7 +24,6 @@ def create_category(
     db.commit()
     db.refresh(category)
     return category
-
 
 @router.get("/", response_model=CategoryListResponse)
 def list_categories(
@@ -48,6 +46,12 @@ def list_categories(
         .all()
     )
 
+    # Adding post count for each category
+    for category in categories:
+        post_count = db.query(Post).filter(Post.category_id == category.id).count()
+        # Here you're adding post_count dynamically
+        category.post_count = post_count  
+
     next_page = page + 1 if page < num_pages else None
     prev_page = page - 1 if page > 1 else None
 
@@ -62,9 +66,8 @@ def list_categories(
         },
         "categories": categories
     }
+    
     return response
-
-
 
 @router.get("/{category_id}", response_model=CategoryResponse)
 def read_category(category_id: int, db: Session = Depends(get_db)):
@@ -73,15 +76,14 @@ def read_category(category_id: int, db: Session = Depends(get_db)):
         db.query(Category)
         .join(User, Category.creator_id == User.id)
         .filter(Category.id == category_id)
-        .options(
-            joinedload(Category.creator)
-        )
+        .options(joinedload(Category.creator))
         .first()
     )
+    
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
+    
     return category
-
 
 @router.put("/{category_id}")
 def update_category(category_id: int, name: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -89,13 +91,15 @@ def update_category(category_id: int, name: str, db: Session = Depends(get_db), 
     Update a category
     """
     category = db.query(Category).filter(Category.id == category_id, Category.creator_id == current_user.id).first()
+    
     if not category:
         raise HTTPException(status_code=403, detail="Not authorized to update this category")
+    
     category.name = name
     db.commit()
     db.refresh(category)
+    
     return category
-
 
 @router.delete("/{category_id}")
 def delete_category(category_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -103,8 +107,11 @@ def delete_category(category_id: int, db: Session = Depends(get_db), current_use
     Delete a category
     """
     category = db.query(Category).filter(Category.id == category_id, Category.creator_id == current_user.id).first()
+    
     if not category:
         raise HTTPException(status_code=403, detail="Not authorized to delete this category")
+    
     db.delete(category)
     db.commit()
+    
     return {"detail": "Category deleted"}
