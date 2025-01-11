@@ -54,6 +54,7 @@ class CategoryResponse(BaseModel):
     id: int
     name: str
     creator: UserResponse
+    post_count: int
 
     class Config:
         orm_mode = True

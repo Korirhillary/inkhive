@@ -38,7 +38,7 @@ interface User {
 interface Category {
   id: number;
   name: string;
-  postCount: number;
+  post_count: number;
   creator: User;
 }
 
@@ -127,7 +127,7 @@ export default function Home() {
               <ListItem key={category.id} disablePadding sx={{ mb: 1 }}>
                 <ListItemText primary={category.name} />
                 <Chip
-                  label={`${category.postCount} posts`}
+                  label={`${category.post_count} posts`}
                   size="small"
                   variant="outlined"
                 />

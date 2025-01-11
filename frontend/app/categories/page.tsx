@@ -34,6 +34,7 @@ interface User {
 interface Category {
   id: number;
   name: string;
+  post_count: number;
   creator: User;
 }
 export default function ManageCategories() {
@@ -111,7 +112,9 @@ export default function ManageCategories() {
       <List>
         {categories.map((category) => (
           <ListItem key={category.id} divider>
-            <ListItemText primary={category.name} />
+            <ListItemText
+              primary={`${category.name} (${category.post_count} posts)`}
+            />
             <Button
               startIcon={<EditIcon />}
               onClick={() => handleEdit(category)}
