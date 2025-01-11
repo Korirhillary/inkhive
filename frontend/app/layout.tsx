@@ -17,9 +17,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-       <Head>
-       <link rel="icon" href="/favicon.jpg" type="image/jpeg"/>
-      </Head>
       <body>
         <SessionProvider>
           <AppRouterCacheProvider>
