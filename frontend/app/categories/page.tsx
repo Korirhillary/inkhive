@@ -56,9 +56,8 @@ export default function ManageCategories() {
   const fetchCategories = async () => {
     try {
       const result = await getCategories(page, limit);
-      setCategories(result.categories || []);
-      const total = result.total || 0;
-      setTotalPages(Math.max(1, Math.ceil(total / limit)));
+      setCategories(result.categories);
+      setTotalPages(result.pagination.total_pages);
     } catch (error) {
       console.error("Error fetching categories:", error);
       setCategories([]);
