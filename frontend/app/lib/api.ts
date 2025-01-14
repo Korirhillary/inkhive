@@ -30,8 +30,8 @@ export const createCategory = async (data: { name: string }) => {
   });
 };
 
-export const getCategories = async () => {
-  return fetchWithAuth(`/categories`);
+export const getCategories = async (page: number = 1, limit: number = 10) => {
+  return fetchWithAuth(`/categories?page=${page}&limit=${limit}`);
 };
 
 export const updateCategory = async (
@@ -52,6 +52,7 @@ export const deleteCategory = async (id: number) => {
   });
 };
 
-export const getPosts = async () => {
-  return fetchWithAuth("/posts");
-}
+export const getPosts = async (page: number = 1, limit: number = 10) => {
+  return fetchWithAuth(`/posts?page=${page}&limit=${limit}`);
+};
+

@@ -16,9 +16,6 @@ def create_category(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Create a new category
-    """
     category = Category(name=category_data.name, creator_id=current_user.id)
     db.add(category)
     db.commit()
@@ -31,9 +28,6 @@ def list_categories(
     page: int = Query(1, ge=1, description="Page number"),
     per: int = Query(10, ge=1, le=100, description="Items per page")
 ):
-    """
-    Get paginated list of categories with pagination details.
-    """
     total_count = db.query(Category).count()
     num_pages = ceil(total_count / per)
     offset = (page - 1) * per
@@ -69,7 +63,6 @@ def list_categories(
 
 @router.get("/{category_id}", response_model=CategoryResponse)
 def read_category(category_id: int, db: Session = Depends(get_db)):
-    """Get category by ID"""
     category = (
         db.query(Category)
         .join(User, Category.creator_id == User.id)
@@ -85,9 +78,6 @@ def read_category(category_id: int, db: Session = Depends(get_db)):
 
 @router.put("/{category_id}")
 def update_category(category_id: int, name: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """
-    Update a category
-    """
     category = db.query(Category).filter(Category.id == category_id, Category.creator_id == current_user.id).first()
     
     if not category:
@@ -101,9 +91,6 @@ def update_category(category_id: int, name: str, db: Session = Depends(get_db), 
 
 @router.delete("/{category_id}")
 def delete_category(category_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """
-    Delete a category
-    """
     category = db.query(Category).filter(Category.id == category_id, Category.creator_id == current_user.id).first()
     
     if not category:
