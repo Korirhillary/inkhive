@@ -16,6 +16,8 @@ import {
   ListItemText,
   TextField,
   Typography,
+  Pagination,
+  Box,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
@@ -37,22 +39,29 @@ interface Category {
   post_count: number;
   creator: User;
 }
+
 export default function ManageCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [open, setOpen] = useState(false);
   const [categoryName, setCategoryName] = useState("");
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10; // Number of items per page
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [page]);
 
   const fetchCategories = async () => {
     try {
-      const result = await getCategories();
+      const result = await getCategories(page, limit);
       setCategories(result.categories);
+      setTotalPages(result.pagination.total_pages);
     } catch (error) {
       console.error("Error fetching categories:", error);
+      setCategories([]);
+      setTotalPages(1);
     }
   };
 
@@ -95,6 +104,10 @@ export default function ManageCategories() {
     }
   };
 
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
+
   return (
     <>
       <Typography variant="h4" component="h1" gutterBottom>
@@ -132,6 +145,17 @@ export default function ManageCategories() {
           </ListItem>
         ))}
       </List>
+      <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Typography variant="body2" sx={{ mb: 1 }}>
+          Page {page} of {totalPages}
+        </Typography>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Box>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>
           {editingCategory ? "Edit Category" : "Add Category"}
@@ -157,3 +181,4 @@ export default function ManageCategories() {
     </>
   );
 }
+
