@@ -18,6 +18,7 @@ import {
   Typography,
   Pagination,
   Box,
+  Tooltip,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
@@ -26,6 +27,7 @@ import {
   getCategories,
   updateCategory,
 } from "../lib/api";
+import { useSession } from "next-auth/react";
 
 interface User {
   id: number;
@@ -47,7 +49,10 @@ export default function ManageCategories() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const limit = 10; // Number of items per page
+  const limit = 10;
+  
+  const { data: session } = useSession();
+  const currentUserId = session?.user?.id;
 
   useEffect(() => {
     fetchCategories();
@@ -60,8 +65,6 @@ export default function ManageCategories() {
       setTotalPages(result.pagination.total_pages);
     } catch (error) {
       console.error("Error fetching categories:", error);
-      setCategories([]);
-      setTotalPages(1);
     }
   };
 
@@ -108,6 +111,11 @@ export default function ManageCategories() {
     setPage(value);
   };
 
+  
+  const canEditCategory = (category: Category) => {
+    return currentUserId && category.creator.id === Number(currentUserId);
+  };
+
   return (
     <>
       <Typography variant="h4" component="h1" gutterBottom>
@@ -124,24 +132,58 @@ export default function ManageCategories() {
       </Button>
       <List>
         {categories.map((category) => (
-          <ListItem key={category.id} divider>
+          <ListItem 
+            key={category.id} 
+            divider
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}
+          >
             <ListItemText
               primary={`${category.name} (${category.post_count} posts)`}
+              secondary={`Created by ${category.creator.username}`}
             />
-            <Button
-              startIcon={<EditIcon />}
-              onClick={() => handleEdit(category)}
-              sx={{ mr: 1 }}
-            >
-              Edit
-            </Button>
-            <Button
-              startIcon={<DeleteIcon />}
-              onClick={() => handleDelete(category.id)}
-              color="error"
-            >
-              Delete
-            </Button>
+            <Box>
+              {canEditCategory(category) ? (
+                <>
+                  <Button
+                    startIcon={<EditIcon />}
+                    onClick={() => handleEdit(category)}
+                    sx={{ mr: 1 }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    startIcon={<DeleteIcon />}
+                    onClick={() => handleDelete(category.id)}
+                    color="error"
+                  >
+                    Delete
+                  </Button>
+                </>
+              ) : (
+                <Tooltip title="Only the author can edit this category">
+                  <span>
+                    <Button
+                      startIcon={<EditIcon />}
+                      sx={{ mr: 1 }}
+                      disabled
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      startIcon={<DeleteIcon />}
+                      color="error"
+                      disabled
+                    >
+                      Delete
+                    </Button>
+                  </span>
+                </Tooltip>
+              )}
+            </Box>
           </ListItem>
         ))}
       </List>
