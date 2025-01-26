@@ -20,7 +20,7 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
     throw new Error(error.error || "An error occurred");
   }
 
-  return response.json();
+  return response.json(); // This returns parsed JSON
 }
 
 export const createCategory = async (data: { name: string }) => {
@@ -35,20 +35,11 @@ export const getCategories = async (page: number = 1, limit: number = 10) => {
 };
 
 export const updateCategory = async (id: number, data: { name: string }) => {
-  const response = await fetchWithAuth(`/categories/${id}`, {
+  // Directly return the result of fetchWithAuth
+  return fetchWithAuth(`/categories/${id}`, {
     method: "PUT",
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify(data),
   });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.detail || 'Failed to update category');
-  }
-
-  return response.json();
 };
 
 export const deleteCategory = async (id: number) => {
@@ -60,4 +51,3 @@ export const deleteCategory = async (id: number) => {
 export const getPosts = async (page: number = 1, limit: number = 10) => {
   return fetchWithAuth(`/posts?page=${page}&limit=${limit}`);
 };
-

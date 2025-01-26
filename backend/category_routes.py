@@ -102,8 +102,7 @@ def update_category(
     db.commit()
     db.refresh(category)
     
-    # Calculate post_count
-    post_count = db.query(Post).filter(Post.category_id == category.id).count()
+    return category
     
     # Create a dictionary with all required fields
     category_dict = {
