@@ -20,7 +20,7 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
     throw new Error(error.error || "An error occurred");
   }
 
-  return response.json();
+  return response.json(); // This returns parsed JSON
 }
 
 export const createCategory = async (data: { name: string }) => {
@@ -34,12 +34,8 @@ export const getCategories = async (page: number = 1, limit: number = 10) => {
   return fetchWithAuth(`/categories?page=${page}&limit=${limit}`);
 };
 
-export const updateCategory = async (
-  id: number,
-  data: {
-    name: string;
-  }
-) => {
+export const updateCategory = async (id: number, data: { name: string }) => {
+  // Directly return the result of fetchWithAuth
   return fetchWithAuth(`/categories/${id}`, {
     method: "PUT",
     body: JSON.stringify(data),
@@ -55,4 +51,3 @@ export const deleteCategory = async (id: number) => {
 export const getPosts = async (page: number = 1, limit: number = 10) => {
   return fetchWithAuth(`/posts?page=${page}&limit=${limit}`);
 };
-

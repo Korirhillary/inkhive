@@ -5,7 +5,7 @@ from auth import get_current_user
 from database import SessionLocal, engine, get_db
 from fastapi import APIRouter, Depends, HTTPException, Query
 from models import Category, CategoryListResponse, CategoryResponse, User, Post
-from schemas import CategoryCreate
+from schemas import CategoryCreate, CategoryUpdate
 from sqlalchemy.orm import Session, joinedload
 
 router = APIRouter()
@@ -76,18 +76,47 @@ def read_category(category_id: int, db: Session = Depends(get_db)):
     
     return category
 
-@router.put("/{category_id}")
-def update_category(category_id: int, name: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    category = db.query(Category).filter(Category.id == category_id, Category.creator_id == current_user.id).first()
+@router.put("/{category_id}", response_model=CategoryResponse)
+def update_category(
+    category_id: int, 
+    category_update: CategoryUpdate, 
+    db: Session = Depends(get_db), 
+    current_user: User = Depends(get_current_user)
+):
+    category = db.query(Category).filter(Category.id == category_id).first()
     
     if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    if category.creator_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to update this category")
     
-    category.name = name
+    if not category_update.name.strip():
+        raise HTTPException(status_code=422, detail="Category name cannot be empty")
+    
+    existing_category = db.query(Category).filter(Category.name == category_update.name, Category.id != category_id).first()
+    if existing_category:
+        raise HTTPException(status_code=422, detail="Category name already exists")
+    
+    category.name = category_update.name
     db.commit()
     db.refresh(category)
     
     return category
+    
+    # Create a dictionary with all required fields
+    category_dict = {
+        "id": category.id,
+        "name": category.name,
+        "post_count": post_count,
+        "creator": {
+            "id": category.creator.id,
+            "username": category.creator.username,
+            "email": category.creator.email
+        }
+    }
+    
+    return CategoryResponse(**category_dict)
 
 @router.delete("/{category_id}")
 def delete_category(category_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):

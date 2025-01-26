@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, constr
 
 
 class UserCreate(BaseModel):
@@ -21,6 +21,9 @@ class CategoryCreate(BaseModel):
 
     class Config:
         orm_mode = True
+
+class CategoryUpdate(BaseModel):
+    name: constr(min_length=1, max_length=100)
 
 
 class PostCreate(BaseModel):
