@@ -51,3 +51,19 @@ export const deleteCategory = async (id: number) => {
 export const getPosts = async (page: number = 1, limit: number = 10) => {
   return fetchWithAuth(`/posts?page=${page}&limit=${limit}`);
 };
+
+export const createPost = async (post: { title: string; content: string }) => {
+  const response = await fetch("/api/posts", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(post),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create post");
+  }
+
+  return response.json();
+};

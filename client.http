@@ -25,7 +25,7 @@ POST {{backendUrl}}/users/login HTTP/1.1
 Accept: application/json
 Content-Type: application/x-www-form-urlencoded
 
-username=userOne&password=Ink@Hive
+username=Test 2&password=Ink@Hive
 
 ### Get User login token
 @authToken={{userLogin.response.body.access_token}}
