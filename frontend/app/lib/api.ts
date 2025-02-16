@@ -51,3 +51,65 @@ export const deleteCategory = async (id: number) => {
 export const getPosts = async (page: number = 1, limit: number = 10) => {
   return fetchWithAuth(`/posts?page=${page}&limit=${limit}`);
 };
+
+export const getPost = async (id: string) => {
+  return fetchWithAuth(`/posts/${id}`);
+};
+
+export const createPost = async (data: {
+  title: string;
+  content: string;
+  categoryId: string;
+  published?: boolean;
+}) => {
+  return fetchWithAuth("/posts", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+};
+
+export const updatePost = async (
+  id: string,
+  data: {
+    title?: string;
+    content?: string;
+    categoryId?: string;
+    published?: boolean;
+  }
+) => {
+  return fetchWithAuth(`/posts/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+};
+
+export const deletePost = async (id: string) => {
+  return fetchWithAuth(`/posts/${id}`, {
+    method: "DELETE",
+  });
+};
+
+
+export const createComment = async (postId: string, content: string) => {
+  return fetchWithAuth(`/posts/${postId}/comments`, {
+    method: "POST",
+    body: JSON.stringify({ content }),
+  });
+};
+
+export const updateComment = async (
+  postId: string,
+  commentId: string,
+  content: string
+) => {
+  return fetchWithAuth(`/posts/${postId}/comments/${commentId}`, {
+    method: "PUT",
+    body: JSON.stringify({ content }),
+  });
+};
+
+export const deleteComment = async (commentId: string) => {
+  return fetchWithAuth(`/comments/${commentId}`, {
+    method: "DELETE",
+  });
+};
