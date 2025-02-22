@@ -30,6 +30,7 @@ class PostCreate(BaseModel):
     title: str
     content: str
     category_id: int
+    published: bool = True
 
     class Config:
         orm_mode = True
