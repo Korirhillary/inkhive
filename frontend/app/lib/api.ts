@@ -59,12 +59,15 @@ export const getPost = async (id: string) => {
 export const createPost = async (data: {
   title: string;
   content: string;
-  categoryId: string;
+  category_id: number;
   published?: boolean;
 }) => {
   return fetchWithAuth("/posts", {
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      ...data,
+      published: data.published ?? true  // Ensures published field is always sent
+    }),
   });
 };
 

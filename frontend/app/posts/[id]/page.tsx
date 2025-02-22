@@ -7,6 +7,7 @@ import {
   Alert,
   Box,
   Button,
+  CircularProgress,
   Divider,
   IconButton,
   List,
@@ -18,7 +19,7 @@ import {
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import {
@@ -35,7 +36,7 @@ const commentSchema = z.object({
 
 type CommentFormData = z.infer<typeof commentSchema>;
 
-export default function PostPage({ params }: { params: { id: string } }) {
+export default function PostPage() {
   const [post, setPost] = useState<Post | null>(null);
   const [errors, setErrors] = useState<Partial<CommentFormData>>({});
   const [generalError, setGeneralError] = useState("");
@@ -43,18 +44,33 @@ export default function PostPage({ params }: { params: { id: string } }) {
   const [formData, setFormData] = useState<CommentFormData>({
     content: "",
   });
-
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
 
   const router = useRouter();
-
   const { data: session } = useSession();
+  const params = useParams<{ id: string }>();
   const { id } = params;
 
   useEffect(() => {
-    if (id) {
-      getPost(id as string).then(setPost);
-    }
+    const fetchPost = async () => {
+      try {
+        if (!id) {
+          setGeneralError("Invalid post ID");
+          return;
+        }
+        
+        const postData = await getPost(id);
+        if (!postData?.id) {
+          throw new Error("Invalid post response");
+        }
+        setPost(postData);
+      } catch (error) {
+        console.error("Failed to load post:", error);
+        setGeneralError("Failed to load post data");
+      }
+    };
+
+    fetchPost();
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,24 +83,31 @@ export default function PostPage({ params }: { params: { id: string } }) {
     e.preventDefault();
     setErrors({});
     setGeneralError("");
+    
+    if (!id) {
+      setGeneralError("Missing post ID");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       commentSchema.parse(formData);
 
       if (editingCommentId) {
-        await updateComment(id as string, editingCommentId, formData.content);
+        await updateComment(id, editingCommentId, formData.content);
       } else {
-        await createComment(id as string, formData.content);
+        await createComment(id, formData.content);
       }
 
-      const updatedPost = await getPost(id as string);
+      const updatedPost = await getPost(id);
+      if (!updatedPost?.id) {
+        throw new Error("Failed to fetch updated post");
+      }
       setPost(updatedPost);
       setFormData({ content: "" });
       setEditingCommentId(null);
-      // toast.success(editingCommentId ? "Comment updated successfully" : "Comment added successfully");
     } catch (err) {
-      // toast.error("Failed to create post");
       if (err instanceof z.ZodError) {
         setErrors(err.flatten().fieldErrors as Partial<CommentFormData>);
       } else {
@@ -97,40 +120,56 @@ export default function PostPage({ params }: { params: { id: string } }) {
   };
 
   const handleDeletePost = async () => {
+    if (!id) {
+      setGeneralError("Missing post ID");
+      return;
+    }
+
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
         await deletePost(id);
         router.push("/");
-        // toast.success("Post deleted successfully");
       } catch (err) {
-        // toast.error("Failed to delete post");
         console.error("Error deleting post:", err);
+        setGeneralError("Failed to delete post");
       }
     }
   };
 
   const handleEditComment = (comment: Comment) => {
+    if (!comment?.id) return;
     setFormData({ content: comment.content });
     setEditingCommentId(comment.id);
   };
 
   const handleDeleteComment = async (commentId: string) => {
+    if (!commentId) {
+      setGeneralError("Missing comment ID");
+      return;
+    }
+
     if (window.confirm("Are you sure you want to delete this comment?")) {
       try {
         await deleteComment(commentId);
-        const updatedPost = await getPost(id as string);
+        const updatedPost = await getPost(id || '');
         setPost(updatedPost);
-        // toast.success("Comment deleted successfully");
       } catch (err) {
-        // toast.error("Failed to delete comment");
         console.error("Error deleting comment:", err);
+        setGeneralError("Failed to delete comment");
       }
     }
   };
 
-  if (!post) return <div>Loading...</div>;
+  if (!post) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <CircularProgress />
+        <Typography variant="body1" ml={2}>Loading post...</Typography>
+      </Box>
+    );
+  }
 
-  const userOwnsPost = session && post.author.id === session?.user?.id;
+  const userOwnsPost = session && post.author?.id === session?.user?.id;
 
   return (
     <Box>
@@ -139,12 +178,13 @@ export default function PostPage({ params }: { params: { id: string } }) {
           {post.title}
         </Typography>
         <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-          {new Date(post.createdAt).toLocaleDateString()} | Author:{" "}
-          {post.author.name} | Comments: ({post._count?.comments || 0}) |
-          Category: {post.category.name}
-          {userOwnsPost && (
+          {new Date(post.createdAt).toLocaleDateString()} | 
+          Author: {post.author?.name || "Unknown author"} | 
+          Comments: ({post._count?.comments || 0}) | 
+          Category: {post.category?.name || "Uncategorized"}
+          {userOwnsPost && post?.id && (
             <>
-              | <Link href={`/posts/edit/${post.id}`}>Edit</Link>|{" "}
+              | <Link href={`/posts/edit/${post.id}`}>Edit</Link> |{" "}
               <Link href="#" onClick={handleDeletePost}>
                 Delete
               </Link>
@@ -167,7 +207,7 @@ export default function PostPage({ params }: { params: { id: string } }) {
               key={comment.id}
               secondaryAction={
                 session &&
-                comment.author.id === session.user?.id && (
+                comment.author?.id === session.user?.id && (
                   <>
                     <IconButton
                       edge="end"
@@ -188,7 +228,7 @@ export default function PostPage({ params }: { params: { id: string } }) {
               }
             >
               <ListItemText
-                primary={comment.author?.name}
+                primary={comment.author?.name || "Anonymous"}
                 secondary={comment.content}
               />
             </ListItem>
